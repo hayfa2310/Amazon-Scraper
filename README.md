@@ -1,7 +1,6 @@
 # Amazon Scraper All Marketplaces
 
-The objective of this project is to retrieve several pieces of information about Amazon through scrapping. Primarily, the main goal is to retrieve all product reviews on all marketplaces where the product is located. The Scraper is succeeded with a Presentation Layer exposing a RESTful API. 
-
+The objective of this project is to retrieve several pieces of information about Amazon through scrapping. Primarily, the main goal is to retrieve all product reviews on all marketplaces where the product is located. The data extracted by the Scraper can be fetched by accessing the endpoints given by the Flask RESTful API.
 
 ## Amazon Marketplace
 In this project, the allowed domains from the existing marketplaces offered by Amazon are 17 marketplaces.
