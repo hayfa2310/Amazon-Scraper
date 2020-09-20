@@ -83,7 +83,7 @@ class ProductReviewsSpider(scrapy.Spider):
         return total_reviews
 
     def parse(self, response):
-        print('User Agent : ', response.request.headers['User-Agent'])
+        # print('User Agent : ', response.request.headers['User-Agent'])
         # print('Proxy ip address is ', response.headers['X-Crawlera-Slave'])
         reviews_titles = response.xpath('//a[@class="a-size-base a-link-normal review-title a-color-base review-title-content a-text-bold"]/span/text()').extract()
         star_ratings = response.xpath('//div[@id="cm_cr-review_list"]//span[@class="a-icon-alt"]/text()').extract()
