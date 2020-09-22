@@ -1,8 +1,7 @@
 import sys
-from pprint import pprint
-
 import scrapy
 from scrapy import Request
+from scrapy.exceptions import CloseSpider
 from ..items import AmazonItem
 from dateparser.search import search_dates
 import datetime
@@ -31,18 +30,13 @@ class ProductReviewsSpider(scrapy.Spider):
                        ]
     review_url_regex = '(https://)?(www.)?amazon.([A-z]{2,3})(.[A-z]{2,3})?/?(.*)?/product-reviews/[A-z0-9]{10}/?(.*)?'
     asin_regex = '(?:https://)?(?:www.)?amazon.(?:[A-z]{2,3})(?:.[A-z]{2,3})?/?(?:.*)?/product-reviews/([A-z0-9]{10})/?(?:.*)?'
-    marketplace_regex = '(?:https://)?(?:www.)?amazon.([A-z]{2,3})(?:.([A-z]{2,3}))?/?(?:.*)?/product-reviews/(?:[A-z0-9]{10})/?(?:.*)?'
+    marketplace_regex = '(?:https://)?(?:www.)?amazon.([A-z]{2,3})?.?([A-z]{2,3})?/?(?:.*)?/product-reviews/(?:[A-z0-9]{10})/?(?:.*)?'
 
-    def __init__(self, url="https://www.amazon.de/Apple-iPhone-XR-64-GB-Schwarz/product-reviews/B07HB4TJH1", persistence_threshold=50, **kwargs):
+    def __init__(self, url, **kwargs):
         super().__init__(**kwargs)
         self.url = url
-        # A parameter to precise
-        # Number of reviews to save in memory before persisting them in the database
-        # self.persistence_threshold = persistence_threshold
         self.asin = self.get_asin_from_url()
         self.marketplace = self.get_marketplace_from_url()
-        # self.product_reviews = []
-        # self.nb_reviews_scrapped = 0
 
     def is_valid_review_url(self):
         return re.search(self.review_url_regex, self.url, re.IGNORECASE)
@@ -52,9 +46,7 @@ class ProductReviewsSpider(scrapy.Spider):
         if asin:
             return asin[0]
         else:
-            # raise exception
-            # Not beautiful Try to find another way to stop the crawler and log a message
-            sys.exit('ASIN not found')
+            raise CloseSpider('ASIN not found')
 
     def get_marketplace_from_url(self):
         marketplace = re.findall(self.marketplace_regex, self.url, re.IGNORECASE)
@@ -64,23 +56,19 @@ class ProductReviewsSpider(scrapy.Spider):
             else:
                 return marketplace[0][1]
         else:
-            # raise exception
-            # Not beautiful Try to find another way to stop the crawler and log a message
-            sys.exit('Marketplace not found')
+            raise CloseSpider('Marketplace not listed')
 
     def start_requests(self):
         if self.is_valid_review_url():
             yield Request(self.url)
         else:
-            # raise exception
-            # Not beautiful Try to find another way to stop the crawler and log a message
-            sys.exit('Not an amazon product review url')
+            raise CloseSpider('Not an amazon product review url')
 
-    def get_number_total_reviews(self, response):
-        list_total_reviews = response.xpath('//span[@data-hook="cr-filter-info-review-count"]/text()').extract()
-        string_total_reviews = list_total_reviews[0].replace(u'\xa0', u' ')
-        total_reviews = [int(s) for s in string_total_reviews.split() if s.isdigit()][-1]
-        return total_reviews
+    # def get_number_total_reviews(self, response):
+    #     list_total_reviews = response.xpath('//span[@data-hook="cr-filter-info-review-count"]/text()').extract()
+    #     string_total_reviews = list_total_reviews[0].replace(u'\xa0', u' ')
+    #     total_reviews = [int(s) for s in string_total_reviews.split() if s.isdigit()][-1]
+    #     return total_reviews
 
     def parse(self, response):
         # print('User Agent : ', response.request.headers['User-Agent'])
