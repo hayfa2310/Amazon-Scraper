@@ -33,8 +33,8 @@ USER_AGENT_LIST = "C:/Users/ASUS/Desktop/Stage2020/PROJET/amazon/amazon/user_age
 #     'scrapy_crawlera.CrawleraMiddleware': 610,
 # }
 #
-CRAWLERA_ENABLED = True
-CRAWLERA_APIKEY = '7cc838061c4a47a0b479d115a856222b'
+# CRAWLERA_ENABLED = True
+# CRAWLERA_APIKEY = ''
 
 AUTOTHROTTLE_ENABLED = False
 CONCURRENT_REQUESTS = 32
