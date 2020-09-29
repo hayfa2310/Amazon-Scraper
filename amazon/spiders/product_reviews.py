@@ -1,7 +1,6 @@
-import sys
+import logging
 import scrapy
 from scrapy import Request
-from scrapy.exceptions import CloseSpider
 from ..items import AmazonItem
 from dateparser.search import search_dates
 import datetime
@@ -46,7 +45,7 @@ class ProductReviewsSpider(scrapy.Spider):
         if asin:
             return asin[0]
         else:
-            raise CloseSpider('ASIN not found')
+            self.logger.error('ASIN not found')
 
     def get_marketplace_from_url(self):
         marketplace = re.findall(self.marketplace_regex, self.url, re.IGNORECASE)
@@ -56,13 +55,13 @@ class ProductReviewsSpider(scrapy.Spider):
             else:
                 return marketplace[0][1]
         else:
-            raise CloseSpider('Marketplace not listed')
+            self.logger.error('Marketplace not listed')
 
     def start_requests(self):
         if self.is_valid_review_url():
             yield Request(self.url)
         else:
-            raise CloseSpider('Not an amazon product review url')
+            self.logger.error('Not an amazon product review url')
 
     # def get_number_total_reviews(self, response):
     #     list_total_reviews = response.xpath('//span[@data-hook="cr-filter-info-review-count"]/text()').extract()
@@ -71,40 +70,46 @@ class ProductReviewsSpider(scrapy.Spider):
     #     return total_reviews
 
     def parse(self, response):
-        # print('User Agent : ', response.request.headers['User-Agent'])
-        # print('Proxy ip address is ', response.headers['X-Crawlera-Slave'])
+        self.logger.info('User Agent : ', response.request.headers['User-Agent'])
+        self.logger.info('Proxy ip address is ', response.headers['X-Crawlera-Slave'])
+
         reviews_titles = response.xpath('//a[@class="a-size-base a-link-normal review-title a-color-base review-title-content a-text-bold"]/span/text()').extract()
         star_ratings = response.xpath('//div[@id="cm_cr-review_list"]//span[@class="a-icon-alt"]/text()').extract()
         reviews_dates = response.xpath('//div[@id="cm_cr-review_list"]//span[@data-hook="review-date"]/text()').extract()
         comments = response.xpath('//span[@data-hook="review-body"][not(parent::*[@class="cr-translated-review-content aok-hidden"])]')
         reviews_votes = response.xpath('//span[@class="a-size-base a-color-tertiary cr-vote-text"]/text()').extract()
 
-        for i in range(len(reviews_titles)):
-            product_review = AmazonItem()
+        if reviews_titles:
 
-            product_review['scraping_date'] = str(datetime.datetime.now())
+            for i in range(len(reviews_titles)):
+                product_review = AmazonItem()
 
-            if i < len(reviews_dates):
-                product_review['review_date'] = str(search_dates(reviews_dates[i], settings={'TIMEZONE': 'UTC'})[0][1])
-            else:
-                product_review['review_date'] = ''
+                product_review['scraping_date'] = str(datetime.datetime.now())
 
-            product_review['review_title'] = reviews_titles[i]
-            product_review['comment'] = ' '.join(comments[i].xpath('string(.)').get().replace('\n', '').split())
+                if i < len(reviews_dates):
+                    product_review['review_date'] = str(search_dates(reviews_dates[i], settings={'TIMEZONE': 'UTC'})[0][1])
+                else:
+                    product_review['review_date'] = ''
 
-            if i < len(star_ratings):
-                product_review['star_rating'] = star_ratings[i][:3]
-            else:
-                product_review['star_rating'] = ''
+                product_review['review_title'] = reviews_titles[i]
+                product_review['comment'] = ' '.join(comments[i].xpath('string(.)').get().replace('\n', '').split())
 
-            if i < len(reviews_votes):
-                product_review['review_votes'] = reviews_votes[i]
-            else:
-                product_review['review_votes'] = ''
+                if i < len(star_ratings):
+                    product_review['star_rating'] = star_ratings[i][:3]
+                else:
+                    product_review['star_rating'] = ''
 
-            yield product_review
+                if i < len(reviews_votes):
+                    product_review['review_votes'] = reviews_votes[i]
+                else:
+                    product_review['review_votes'] = ''
 
-        next_page = response.css('li.a-last a::attr(href)').get()
+                yield product_review
 
-        if next_page:
-            yield response.follow(next_page, callback=self.parse)
+            next_page = response.css('li.a-last a::attr(href)').get()
+
+            if next_page:
+                yield response.follow(next_page, callback=self.parse)
+
+        else:
+            self.logger.warning(" Blocked no information on this page")

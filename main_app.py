@@ -20,8 +20,8 @@ output_data = []
 crawl_runner = CrawlerRunner(get_project_settings())
 
 # Scrapy Logging
-# configure_logging(install_root_handler=False)
-# logging.basicConfig(filename="log.txt")
+configure_logging(install_root_handler=False)
+logging.basicConfig(filename="log.txt")
 
 
 # By Default Flask will come into this when we run the file

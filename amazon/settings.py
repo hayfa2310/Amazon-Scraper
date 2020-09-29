@@ -23,7 +23,8 @@ NEWSPIDER_MODULE = 'amazon.spiders'
 
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddleware.useragent.UserAgentMiddleware': None,
-    'random_useragent.RandomUserAgentMiddleware': 400
+    'random_useragent.RandomUserAgentMiddleware': 400,
+    'scrapy_crawlera.CrawleraMiddleware': 610
 }
 
 USER_AGENT_LIST = "C:/Users/ASUS/Desktop/Stage2020/PROJET/amazon/amazon/user_agents.txt"
@@ -32,13 +33,18 @@ USER_AGENT_LIST = "C:/Users/ASUS/Desktop/Stage2020/PROJET/amazon/amazon/user_age
 #     'scrapy_crawlera.CrawleraMiddleware': 610,
 # }
 #
-# CRAWLERA_ENABLED = True
-# CRAWLERA_APIKEY = ''
+CRAWLERA_ENABLED = True
+CRAWLERA_APIKEY = '7cc838061c4a47a0b479d115a856222b'
+
+AUTOTHROTTLE_ENABLED = False
+CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS_PER_DOMAIN = 32
+DOWNLOAD_TIMEOUT = 600
 
 FEED_EXPORT_ENCODING = 'utf-8'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Disable cookies (enabled by default)
 COOKIES_ENABLED = False
