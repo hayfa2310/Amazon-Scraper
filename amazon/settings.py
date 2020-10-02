@@ -10,6 +10,10 @@
 # Creating a color formatter for Logging
 import scrapy.utils.log
 from amazon.logging import _get_handler_custom
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 scrapy.utils.log._get_handler = _get_handler_custom
 
@@ -29,12 +33,8 @@ DOWNLOADER_MIDDLEWARES = {
 
 USER_AGENT_LIST = "C:/Users/ASUS/Desktop/Stage2020/PROJET/amazon/amazon/user_agents.txt"
 
-# DOWNLOADER_MIDDLEWARES = {
-#     'scrapy_crawlera.CrawleraMiddleware': 610,
-# }
-#
-# CRAWLERA_ENABLED = True
-# CRAWLERA_APIKEY = ''
+CRAWLERA_ENABLED = True
+CRAWLERA_APIKEY = os.getenv("CRAWLERA_API_KEY")
 
 AUTOTHROTTLE_ENABLED = False
 CONCURRENT_REQUESTS = 32

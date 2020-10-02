@@ -71,7 +71,7 @@ class ProductReviewsSpider(scrapy.Spider):
 
     def parse(self, response):
         self.logger.info('User Agent : ', response.request.headers['User-Agent'])
-        self.logger.info('Proxy ip address is ', response.headers['X-Crawlera-Slave'])
+        # self.logger.info('Proxy ip address is ', response.headers['X-Crawlera-Slave'])
 
         reviews_titles = response.xpath('//a[@class="a-size-base a-link-normal review-title a-color-base review-title-content a-text-bold"]/span/text()').extract()
         star_ratings = response.xpath('//div[@id="cm_cr-review_list"]//span[@class="a-icon-alt"]/text()').extract()
