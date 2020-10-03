@@ -1,14 +1,10 @@
-import logging
-
 import crochet
-
 from flask import Flask, jsonify, request, redirect, url_for
 from scrapy import signals
 from scrapy.crawler import CrawlerRunner
 from scrapy.signalmanager import dispatcher
 from scrapy.utils.log import configure_logging
 from scrapy.utils.project import get_project_settings
-
 from amazon.spiders.product_reviews import ProductReviewsSpider
 
 crochet.setup()
@@ -19,9 +15,7 @@ app = Flask(__name__)
 output_data = []
 crawl_runner = CrawlerRunner(get_project_settings())
 
-# Scrapy Logging
-configure_logging(install_root_handler=False)
-logging.basicConfig(filename="log.txt")
+configure_logging()
 
 
 # By Default Flask will come into this when we run the file

@@ -1,4 +1,3 @@
-import logging
 import scrapy
 from scrapy import Request
 from ..items import AmazonItem
@@ -70,8 +69,8 @@ class ProductReviewsSpider(scrapy.Spider):
     #     return total_reviews
 
     def parse(self, response):
-        self.logger.info('User Agent : ', response.request.headers['User-Agent'])
-        # self.logger.info('Proxy ip address is ', response.headers['X-Crawlera-Slave'])
+        self.logger.info('User Agent : ' + str(response.request.headers['User-Agent']))
+        self.logger.info('Proxy ip address is ' + str(response.headers['X-Crawlera-Slave']))
 
         reviews_titles = response.xpath('//a[@class="a-size-base a-link-normal review-title a-color-base review-title-content a-text-bold"]/span/text()').extract()
         star_ratings = response.xpath('//div[@id="cm_cr-review_list"]//span[@class="a-icon-alt"]/text()').extract()
@@ -112,4 +111,4 @@ class ProductReviewsSpider(scrapy.Spider):
                 yield response.follow(next_page, callback=self.parse)
 
         else:
-            self.logger.warning(" Blocked no information on this page")
+            self.logger.warning(" No Reviews on this page or Blocked with Captcha")

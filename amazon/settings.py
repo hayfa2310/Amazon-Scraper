@@ -7,16 +7,20 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-# Creating a color formatter for Logging
-import scrapy.utils.log
-from amazon.logging import _get_handler_custom
+# Creating a color formatter for Logging in the Terminal
+# import scrapy.utils.log
+# from amazon.logging import _get_handler_custom
+# scrapy.utils.log._get_handler = _get_handler_custom
+
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
-scrapy.utils.log._get_handler = _get_handler_custom
-
+LOG_ENABLED = True
+LOG_ENCODING = 'UTF-8'
+LOG_FILE = './scrapy_output.txt'
+LOG_STDOUT = True
 
 # Settings
 BOT_NAME = 'amazon'
